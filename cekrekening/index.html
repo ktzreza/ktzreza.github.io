@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔥 WarnaGroup Cekrek</title>
+  <link rel="icon" type="image/png" href="https://images.icon-icons.com/2746/PNG/512/rainbow_icon_175988.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+    <h1 class="text-2xl font-bold text-blue-600 mb-4 text-center">🔥 WarnaGroup Cekrek</h1>
+
+    <form id="paymentForm" class="space-y-4">
+      <div>
+        <label for="mode" class="block font-medium">Pilih Jenis Cek:</label>
+        <select id="mode" class="w-full p-2 border rounded">
+          <option value="ewallet">E-Wallet</option>
+          <option value="bank">Rekening Bank</option>
+        </select>
+      </div>
+
+      <div id="providerWrapper">
+        <label for="provider" class="block font-medium">Provider:</label>
+        <select id="provider" class="w-full p-2 border rounded">
+          <option value="shopeepay">ShopeePay</option>
+          <option value="gopay">GoPay</option>
+          <option value="ovo">OVO</option>
+          <option value="dana">DANA</option>
+          <option value="linkaja">LinkAja</option>
+        </select>
+      </div>
+
+      <div id="bankWrapper" class="hidden">
+        <label for="bank" class="block font-medium">Bank:</label>
+        <select id="bank" class="w-full p-2 border rounded">
+          <option value="bank_bca">BCA</option>
+          <option value="bank_bni">BNI</option>
+          <option value="bank_bri">BRI</option>
+          <option value="bank_mandiri">Mandiri</option>
+          <option value="bank_danamon">Danamon</option>
+          <option value="bank_permata">Permata</option>
+          <option value="bank_btn">BTN</option>
+          <option value="bank_btpn">BTPN / Jenius</option>
+          <option value="bank_bsi">BSI Indonesia</option>
+          <option value="bank_digibank">Digibank</option>
+          <option value="bank_cimb_niaga">CIMB Niaga</option>
+          <option value="bank_dbs_indonesia">DBS Indonesia</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="id" id="idLabel" class="block font-medium">Nomor HP / ID:</label>
+      <input id="id" type="text" autocomplete="off" class="w-full p-2 border rounded" placeholder="Masukkan nomor" autofocus />
+      </div>
+
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded">
+        Cek Sekarang
+      </button>
+    </form>
+
+        <div id="resultBox" class="mt-6 p-4 rounded bg-gray-100 text-sm text-gray-800 text-center break-words">
+      🔍 Masukkan datanya.
+    </div>
+  </div>
+
+    <script>
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key)) || (e.ctrlKey && ["u", "s"].includes(e.key.toLowerCase()))) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+  </script>
+
+  <script>
+    const modeSelect = document.getElementById("mode");
+    const providerWrapper = document.getElementById("providerWrapper");
+    const bankWrapper = document.getElementById("bankWrapper");
+    const idLabel = document.getElementById("idLabel");
+    const resultBox = document.getElementById("resultBox");
+
+    modeSelect.addEventListener("change", () => {
+      const isEwallet = modeSelect.value === "ewallet";
+      providerWrapper.classList.toggle("hidden", !isEwallet);
+      bankWrapper.classList.toggle("hidden", isEwallet);
+      idLabel.textContent = isEwallet ? "Nomor HP / ID:" : "Nomor Rekening:";
+    });
+
+    document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const mode = modeSelect.value;
+      const id = document.getElementById("id").value.trim();
+      const provider = document.getElementById("provider").value;
+      const bank = document.getElementById("bank").value;
+
+      if (!id) {
+        resultBox.innerHTML = `<div class="text-center">🔍 Masukkan datanya dulu ya.</div>`;
+        return;
+      }
+
+      resultBox.innerHTML = `
+      <div class="flex flex-col items-center justify-center gap-2 my-4">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+       <p class="text-blue-500 text-sm">⏳ Sedang memproses...</p>
+       </div>
+       `;
+
+
+      let query = `?mode=${mode}`;
+      if (mode === "ewallet") {
+        query += `&id=${encodeURIComponent(id)}&provider=${encodeURIComponent(provider)}`;
+      } else {
+        query += `&bank=${encodeURIComponent(bank)}&rekening=${encodeURIComponent(id)}`;
+      }
+
+      try {
+        const res = await fetch(`/api/inquiry${query}`);
+        const data = await res.json();
+
+        if (!res.ok || !data || data.error) {
+          resultBox.innerHTML = `<div class="text-red-600 text-center">❌ ${data?.error || "Gagal cek data."}</div>`;
+          return;
+        }
+
+        if (mode === "ewallet" && data.data?.status === "SUCCESS") {
+          resultBox.innerHTML = `
+            <div class="text-left text-sm">
+              ✅ <strong>Nama:</strong> ${data.data.name}<br />
+              🔢 <strong>ID:</strong> ${data.data.account_number}<br />
+              💼 <strong>Wallet:</strong> ${data.data.bank}
+            </div>
+          `;
+            } else if (mode === "bank" && data.success && data.data?.nama) {
+          resultBox.innerHTML = `
+            <div class="text-left text-sm">
+              ✅ <strong>Nama:</strong> ${data.data.nama}<br />
+              🔢 <strong>Rekening:</strong> ${data.data.no_rekening}<br />
+              🏦 <strong>Bank:</strong> ${data.data.nama_bank}
+            </div>
+          `;
+        } else {
+          resultBox.innerHTML = `<div class="text-red-600 text-center">❌ Tidak ditemukan atau tidak valid.</div>`;
+        }
+
+      } catch (err) {
+        console.error(err);
+        resultBox.innerHTML = `<div class="text-red-600 text-center">❌ Gagal memproses. Coba lagi nanti.</div>`;
+      }
+    });
+  </script>
+</body>
+</html>
