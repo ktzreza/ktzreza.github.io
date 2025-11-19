@@ -2,8 +2,8 @@ port: 000
 
 title: Nota Hutang
 description: Aplikasi pencatat dan penagihan hutang berbasis web.
-baseurl: "" # kosongkan kalau di domain utama
-url: "https://rz-home.web.id/catathutang" # ganti dengan URL Pages kamu
+baseurl: "catathutang" # kosongkan kalau di domain utama
+url: "https://rz-home.web.id" # ganti dengan URL Pages kamu
 
 sass:
   sass_dir: assets/sass
