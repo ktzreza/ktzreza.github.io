@@ -1,0 +1,22 @@
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js"></script>
+
+  <script>
+    // Ganti dengan konfigurasi Firebase kamu
+    const firebaseConfig = {
+  apiKey: "AIzaSyDDtkS5NIINedofqG0f4wTMgLi8qN5RtS8",
+  authDomain: "rz-home.firebaseapp.com",
+  projectId: "rz-home",
+  storageBucket: "rz-home.firebasestorage.app",
+  messagingSenderId: "747629104496",
+  appId: "1:747629104496:web:25c4401f83ea51a76b13b5",
+  measurementId: "G-6WJWPFP6BC"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+</script>
