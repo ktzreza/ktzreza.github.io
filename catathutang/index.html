@@ -1,0 +1,19 @@
+---
+layout: default
+title: Login
+header: Catat & Tagih
+---
+
+<div class="login-box">
+    <h2>{{site.title}}</h2>
+    <p>Masuk untuk mulai mencatat</p>
+    <button onclick="loginGoogle()">Masuk dengan Google</button>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded",(function(){firebase.initializeApp({apiKey:"AIzaSyDDtkS5NIINedofqG0f4wTMgLi8qN5RtS8",authDomain:"rz-home.firebaseapp.com",projectId:"rz-home",storageBucket:"rz-home.firebasestorage.app",messagingSenderId:"747629104496",appId:"1:747629104496:web:25c4401f83ea51a76b13b5",measurementId:"G-6WJWPFP6BC"});const a=firebase.auth(),e=new firebase.auth.GoogleAuthProvider;window.loginGoogle=function(){a.signInWithPopup(e).then((a=>{window.location.href="/catat"})).catch((a=>{showAlert("Login gagal: "+a.message)}))},a.onAuthStateChanged((a=>{a&&(window.location.href="/catat")}))}));
+</script>
